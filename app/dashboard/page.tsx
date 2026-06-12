@@ -29,30 +29,54 @@ export default function DashboardPage() {
   }, []);
 
   return (
-    <div className="min-h-screen p-10 bg-white">
-      <h1 className="text-3xl font-bold text-[#D4AF37] mb-6">
-        Select a County
-      </h1>
+    <div className="min-h-screen flex flex-col bg-white">
 
-      {loading && <p>Loading counties...</p>}
+      {/* HEADER */}
+      <header className="flex justify-between items-center px-8 py-6 shadow-sm">
+        <h1 className="text-2xl font-bold text-[#D4AF37]">
+          HouseFinder
+        </h1>
 
-      {!loading && counties.length === 0 && (
-        <p>No counties found. Add some in admin.</p>
-      )}
+        <Link
+          href="/"
+          className="text-[#D4AF37] font-semibold hover:underline"
+        >
+          Home
+        </Link>
+      </header>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-6">
-        {counties.map((county) => (
+      {/* MAIN CONTENT */}
+      <main className="flex-1 p-10">
+        <h1 className="text-3xl font-bold text-[#D4AF37] mb-6">
+          Select a County
+        </h1>
+
+        {loading && <p>Loading counties...</p>}
+
+        {!loading && counties.length === 0 && (
+          <p>No counties found. Add some in admin.</p>
+        )}
+
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-6">
+          {counties.map((county) => (
             <Link
-            key={county.id}
-            href={`/dashboard/${county.name.toLowerCase()}`}
-            className="p-6 bg-[#D4AF37] text-white rounded-xl shadow hover:opacity-90 transition text-center"
+              key={county.id}
+              href={`/dashboard/${county.name.toLowerCase()}`}
+              className="p-6 bg-[#D4AF37] text-white rounded-xl shadow hover:opacity-90 transition text-center"
             >
-            <h2 className="text-xl font-semibold">
+              <h2 className="text-xl font-semibold">
                 {county.name}
-            </h2>
+              </h2>
             </Link>
-        ))}
-      </div>
+          ))}
+        </div>
+      </main>
+
+      {/* FOOTER */}
+      <footer className="bg-[#D4AF37] text-white text-center py-4">
+        © 2026 HouseFinder. All rights reserved.
+      </footer>
+
     </div>
   );
 }
