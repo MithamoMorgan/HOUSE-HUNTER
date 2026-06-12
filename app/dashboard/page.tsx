@@ -12,6 +12,13 @@ export default function DashboardPage() {
   const [counties, setCounties] = useState<County[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // MODAL STATE
+  const [open, setOpen] = useState(false);
+
+  const [selectedCounty, setSelectedCounty] = useState("");
+  const [selectedTown, setSelectedTown] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+
   useEffect(() => {
     async function fetchCounties() {
       try {
@@ -48,28 +55,99 @@ export default function DashboardPage() {
       {/* MAIN CONTENT */}
       <main className="flex-1 p-10">
         <h1 className="text-3xl font-bold text-[#D4AF37] mb-6">
-          Select a County
+          Find Apartments
         </h1>
 
-        {loading && <p>Loading counties...</p>}
+        <button
+          onClick={() => setOpen(true)}
+          className="bg-[#D4AF37] text-white px-6 py-3 rounded-lg shadow hover:opacity-90"
+        >
+          Start Search
+        </button>
 
-        {!loading && counties.length === 0 && (
-          <p>No counties found. Add some in admin.</p>
-        )}
+        {/* MODAL */}
+        {open && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="bg-white w-full max-w-md rounded-xl p-6 shadow-lg">
 
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-6">
-          {counties.map((county) => (
-            <Link
-              key={county.id}
-              href={`/dashboard/${county.name.toLowerCase()}`}
-              className="p-6 bg-[#D4AF37] text-white rounded-xl shadow hover:opacity-90 transition text-center"
-            >
-              <h2 className="text-xl font-semibold">
-                {county.name}
+              <h2 className="text-xl font-bold text-[#D4AF37] mb-4">
+                Search Properties
               </h2>
-            </Link>
-          ))}
-        </div>
+
+              {/* COUNTY */}
+              <label className="text-sm font-semibold">County</label>
+              <select
+                className="w-full border p-2 rounded mb-4"
+                value={selectedCounty}
+                onChange={(e) => setSelectedCounty(e.target.value)}
+              >
+                <option value="">Select County</option>
+                {counties.map((c) => (
+                  <option key={c.id} value={c.name}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+
+              {/* TOWN */}
+              <label className="text-sm font-semibold">Town</label>
+              <select
+                className="w-full border p-2 rounded mb-4"
+                value={selectedTown}
+                onChange={(e) => setSelectedTown(e.target.value)}
+                disabled={!selectedCounty}
+              >
+                <option value="">Select Town</option>
+                <option>Nairobi CBD</option>
+                <option>Westlands</option>
+                <option>Karen</option>
+              </select>
+
+              {/* CATEGORY */}
+              <label className="text-sm font-semibold">Category</label>
+              <select
+                className="w-full border p-2 rounded mb-4"
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                disabled={!selectedTown}
+              >
+                <option value="">Select Category</option>
+                <option>Bedsitter</option>
+                <option>Single Room</option>
+                <option>1 Bedroom</option>
+                <option>2 Bedroom</option>
+                <option>3 Bedroom</option>
+              </select>
+
+              {/* ACTIONS */}
+              <div className="flex justify-between mt-4">
+                <button
+                  onClick={() => setOpen(false)}
+                  className="px-4 py-2 border rounded"
+                >
+                  Close
+                </button>
+
+                <button
+                  disabled={!selectedCategory}
+                  className="bg-[#D4AF37] text-white px-4 py-2 rounded disabled:opacity-50"
+                  onClick={() => {
+                    setOpen(false);
+                    // later: route to results page
+                    console.log({
+                      selectedCounty,
+                      selectedTown,
+                      selectedCategory,
+                    });
+                  }}
+                >
+                  Search
+                </button>
+              </div>
+
+            </div>
+          </div>
+        )}
       </main>
 
       {/* FOOTER */}
