@@ -24,12 +24,10 @@ export default function DashboardPage() {
 
   const [open, setOpen] = useState(false);
 
-  // IMPORTANT: always store IDs as strings
   const [selectedCounty, setSelectedCounty] = useState("");
   const [selectedTown, setSelectedTown] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
 
-  // LOAD COUNTIES
   useEffect(() => {
     async function fetchCounties() {
       try {
@@ -46,7 +44,6 @@ export default function DashboardPage() {
     fetchCounties();
   }, []);
 
-  // LOAD TOWNS WHEN COUNTY CHANGES (FIXED)
   useEffect(() => {
     async function fetchTowns() {
       if (!selectedCounty) {
@@ -86,8 +83,13 @@ export default function DashboardPage() {
         </Link>
       </header>
 
-      {/* MAIN */}
-      <main className="flex-1 flex flex-col items-center justify-center p-10">
+      {/* MAIN BODY WITH BACKGROUND IMAGE ONLY HERE */}
+      <main
+        className="flex-1 flex flex-col items-center justify-center p-10 bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: "url('/images/dash.jpg')",
+        }}
+      >
         <h1 className="text-3xl font-bold text-[#D4AF37] mb-6">
           Find Apartments
         </h1>
@@ -108,7 +110,6 @@ export default function DashboardPage() {
                 Search Properties
               </h2>
 
-              {/* COUNTY */}
               <label className="text-sm font-semibold text-black">
                 County
               </label>
@@ -127,7 +128,6 @@ export default function DashboardPage() {
                 ))}
               </select>
 
-              {/* TOWN */}
               <label className="text-sm font-semibold text-black">
                 Town
               </label>
@@ -147,7 +147,6 @@ export default function DashboardPage() {
                 ))}
               </select>
 
-              {/* CATEGORY */}
               <label className="text-sm font-semibold text-black">
                 Category
               </label>
@@ -168,7 +167,6 @@ export default function DashboardPage() {
                 <option>5+ Bedrooms</option>
               </select>
 
-              {/* ACTIONS */}
               <div className="flex justify-between mt-4">
                 <button
                   onClick={() => setOpen(false)}
