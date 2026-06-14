@@ -1,5 +1,3 @@
-export const dynamic = "force-dynamic";
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -29,18 +27,16 @@ export default function ListingsPage() {
 
   useEffect(() => {
     async function load() {
-      const res = await fetch("/api/listings");
-      const data = await res.json();
+      try {
+        const url = `/api/listings?county=${county || ""}&town=${town || ""}&category=${category || ""}`;
 
-      const filtered = data.filter((l: Listing) => {
-        return (
-          (!county || l.county_id === Number(county)) &&
-          (!town || l.town_id === Number(town)) &&
-          (!category || l.category === category)
-        );
-      });
+        const res = await fetch(url);
+        const data = await res.json();
 
-      setListings(filtered);
+        setListings(data);
+      } catch (err) {
+        console.error("Failed to load listings", err);
+      }
     }
 
     load();
@@ -59,10 +55,7 @@ export default function ListingsPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 
           {listings.map((l) => (
-            <div
-              key={l.id}
-              className="border rounded p-4 shadow text-center text-black"
-            >
+            <div key={l.id} className="border rounded p-4 shadow text-center text-black">
 
               {l.image && (
                 <img
@@ -71,33 +64,14 @@ export default function ListingsPage() {
                 />
               )}
 
-              <h2 className="font-bold text-lg">
-                {l.name}
-              </h2>
+              <h2 className="font-bold text-lg">{l.name}</h2>
 
-              <p>
-                <span className="font-bold">Category:</span> {l.category}
-              </p>
-
-              <p>
-                <span className="font-bold">Rent:</span> KES {l.price}
-              </p>
-
-              <p>
-                <span className="font-bold">Vacant Units:</span> {l.vacant_units}
-              </p>
-
-              <p className="text-sm mt-2">
-                <span className="font-bold">Amenities:</span> {l.amenities}
-              </p>
-
-              <p className="mt-2">
-                <span className="font-bold">Description:</span> {l.description}
-              </p>
-
-              <p className="mt-2">
-                <span className="font-bold">Contact:</span> {l.contact}
-              </p>
+              <p><b>Category:</b> {l.category}</p>
+              <p><b>Rent:</b> KES {l.price}</p>
+              <p><b>Vacant Units:</b> {l.vacant_units}</p>
+              <p><b>Amenities:</b> {l.amenities}</p>
+              <p><b>Description:</b> {l.description}</p>
+              <p><b>Contact:</b> {l.contact}</p>
 
             </div>
           ))}
