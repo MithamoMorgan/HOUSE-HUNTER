@@ -2,23 +2,34 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 type County = {
   id: number;
   name: string;
 };
 
+type Town = {
+  id: number;
+  name: string;
+  county_id: number;
+};
+
 export default function DashboardPage() {
+  const router = useRouter();
+
   const [counties, setCounties] = useState<County[]>([]);
+  const [towns, setTowns] = useState<Town[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // MODAL STATE
   const [open, setOpen] = useState(false);
 
+  // IMPORTANT: always store IDs as strings
   const [selectedCounty, setSelectedCounty] = useState("");
   const [selectedTown, setSelectedTown] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
 
+  // LOAD COUNTIES
   useEffect(() => {
     async function fetchCounties() {
       try {
@@ -34,6 +45,29 @@ export default function DashboardPage() {
 
     fetchCounties();
   }, []);
+
+  // LOAD TOWNS WHEN COUNTY CHANGES (FIXED)
+  useEffect(() => {
+    async function fetchTowns() {
+      if (!selectedCounty) {
+        setTowns([]);
+        setSelectedTown("");
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/towns?countyId=${selectedCounty}`);
+        const data = await res.json();
+
+        setTowns(data);
+        setSelectedTown("");
+      } catch (err) {
+        console.error("Failed to load towns", err);
+      }
+    }
+
+    fetchTowns();
+  }, [selectedCounty]);
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
@@ -52,8 +86,8 @@ export default function DashboardPage() {
         </Link>
       </header>
 
-      {/* MAIN CONTENT */}
-      <main className="flex-1 p-10">
+      {/* MAIN */}
+      <main className="flex-1 flex flex-col items-center justify-center p-10">
         <h1 className="text-3xl font-bold text-[#D4AF37] mb-6">
           Find Apartments
         </h1>
@@ -70,43 +104,56 @@ export default function DashboardPage() {
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
             <div className="bg-white w-full max-w-md rounded-xl p-6 shadow-lg">
 
-              <h2 className="text-xl font-bold text-[#D4AF37] mb-4">
+              <h2 className="text-xl font-bold text-black mb-4">
                 Search Properties
               </h2>
 
               {/* COUNTY */}
-              <label className="text-sm font-semibold">County</label>
+              <label className="text-sm font-semibold text-black">
+                County
+              </label>
+
               <select
-                className="w-full border p-2 rounded mb-4"
+                className="w-full border border-black p-2 rounded mb-4 text-black"
                 value={selectedCounty}
                 onChange={(e) => setSelectedCounty(e.target.value)}
               >
                 <option value="">Select County</option>
-                {counties.map((c) => (
-                  <option key={c.id} value={c.name}>
-                    {c.name}
+
+                {counties.map((county) => (
+                  <option key={county.id} value={county.id}>
+                    {county.name}
                   </option>
                 ))}
               </select>
 
               {/* TOWN */}
-              <label className="text-sm font-semibold">Town</label>
+              <label className="text-sm font-semibold text-black">
+                Town
+              </label>
+
               <select
-                className="w-full border p-2 rounded mb-4"
+                className="w-full border border-black p-2 rounded mb-4 text-black"
                 value={selectedTown}
                 onChange={(e) => setSelectedTown(e.target.value)}
                 disabled={!selectedCounty}
               >
                 <option value="">Select Town</option>
-                <option>Nairobi CBD</option>
-                <option>Westlands</option>
-                <option>Karen</option>
+
+                {towns.map((town) => (
+                  <option key={town.id} value={town.id}>
+                    {town.name}
+                  </option>
+                ))}
               </select>
 
               {/* CATEGORY */}
-              <label className="text-sm font-semibold">Category</label>
+              <label className="text-sm font-semibold text-black">
+                Category
+              </label>
+
               <select
-                className="w-full border p-2 rounded mb-4"
+                className="w-full border border-black p-2 rounded mb-4 text-black"
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
                 disabled={!selectedTown}
@@ -115,30 +162,49 @@ export default function DashboardPage() {
                 <option>Bedsitter</option>
                 <option>Single Room</option>
                 <option>1 Bedroom</option>
-                <option>2 Bedroom</option>
-                <option>3 Bedroom</option>
+                <option>2 Bedrooms</option>
+                <option>3 Bedrooms</option>
+                <option>4 Bedrooms</option>
+                <option>5+ Bedrooms</option>
               </select>
 
               {/* ACTIONS */}
               <div className="flex justify-between mt-4">
                 <button
                   onClick={() => setOpen(false)}
-                  className="px-4 py-2 border rounded"
+                  className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
                 >
                   Close
                 </button>
 
                 <button
                   disabled={!selectedCategory}
-                  className="bg-[#D4AF37] text-white px-4 py-2 rounded disabled:opacity-50"
-                  onClick={() => {
-                    setOpen(false);
-                    // later: route to results page
-                    console.log({
-                      selectedCounty,
-                      selectedTown,
-                      selectedCategory,
+                  className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 disabled:opacity-50"
+                  onClick={async () => {
+                    const res = await fetch("/api/listings");
+                    const data = await res.json();
+
+                    const filtered = data.filter((l: any) => {
+                      return (
+                        (!selectedCounty ||
+                          l.county_id === Number(selectedCounty)) &&
+                        (!selectedTown ||
+                          l.town_id === Number(selectedTown)) &&
+                        (!selectedCategory ||
+                          l.category === selectedCategory)
+                      );
                     });
+
+                    if (filtered.length === 0) {
+                      alert("No listings found");
+                      return;
+                    }
+
+                    setOpen(false);
+
+                    router.push(
+                      `/listings?county=${selectedCounty}&town=${selectedTown}&category=${selectedCategory}`
+                    );
                   }}
                 >
                   Search
