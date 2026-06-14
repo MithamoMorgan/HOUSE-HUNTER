@@ -32,13 +32,18 @@ export default function Home() {
       </header>
 
       {/* Hero Section */}
-      <section className="flex-1 flex items-center justify-center">
-        <div className="max-w-3xl text-center px-6">
-          <h2 className="text-5xl font-bold text-gray-900 mb-6">
+      <section
+        className="flex-1 flex items-center justify-center bg-cover bg-center"
+        style={{
+          backgroundImage: "url('/images/hero.png')",
+        }}
+      >
+        <div className="max-w-3xl text-center px-6 bg-black/40 p-8 rounded-xl">
+          <h2 className="text-5xl font-bold text-white mb-6">
             Find a House With Ease
           </h2>
 
-          <p className="text-xl text-gray-600 mb-10">
+          <p className="text-xl text-white mb-10">
             Browse houses across Kenya and save time, money,
             and unnecessary agent fees.
           </p>
