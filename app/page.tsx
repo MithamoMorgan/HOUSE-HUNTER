@@ -11,23 +11,27 @@ export default function Home() {
       
       {/* Header */}
       <header className="flex justify-between items-center px-8 py-6 shadow-sm">
-        
-        <div className="flex items-center gap-3">
+
+        {/* Logo */}
+        <div>
           <h1 className="text-2xl font-bold text-[#D4AF37]">
             HouseFinder
           </h1>
-
-          {isSignedIn && <UserButton />}
         </div>
 
-        {!isSignedIn && (
-          <Link
-            href="/auth"
-            className="bg-[#D4AF37] text-white px-5 py-2 rounded-lg hover:opacity-90"
-          >
-            Sign In
-          </Link>
-        )}
+        {/* Right Side */}
+        <div>
+          {isSignedIn ? (
+            <UserButton />
+          ) : (
+            <Link
+              href="/auth"
+              className="bg-[#D4AF37] text-white px-5 py-2 rounded-lg hover:opacity-90"
+            >
+              Sign In
+            </Link>
+          )}
+        </div>
 
       </header>
 
