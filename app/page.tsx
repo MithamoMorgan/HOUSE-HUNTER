@@ -60,12 +60,29 @@ export default function Home() {
               Get Started
             </Link>
           ) : (
-            <Link
-              href="/dashboard"
-              className="bg-[#D4AF37] text-white px-8 py-4 rounded-xl text-lg font-semibold hover:opacity-90 inline-block"
-            >
-              Go to Dashboard
-            </Link>
+            <div className="flex flex-col items-center gap-4">
+              
+              <Link
+                href="/dashboard"
+                className="bg-[#D4AF37] text-white px-8 py-4 rounded-xl text-lg font-semibold hover:opacity-90 inline-block"
+              >
+                Go to Dashboard
+              </Link>
+
+              <p className="text-xl text-white mb-10">
+                Join us today and become a partner. As a caretaker or landlord,
+                you can list your apartments, share property details, and easily let tenants know
+                when vacancies are available.
+              </p>
+
+              <Link
+                href="/admin"
+                className="bg-[#D4AF37] text-white px-8 py-4 rounded-xl text-lg font-semibold hover:opacity-90 inline-block"
+              >
+                Join Us
+              </Link>
+
+            </div>
           )}
         </div>
       </section>
